@@ -164,6 +164,14 @@ export default function ProfilePage() {
                 {profile.role.replace("_", " ")}
               </p>
             </div>
+            <div className="mt-8 border-t border-gray-100 pt-6">
+              <Link
+                href="/bookings"
+                className="inline-flex rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800"
+              >
+              🚜 My Bookings
+              </Link>
+          </div>
 
           </div>
 
