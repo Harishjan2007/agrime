@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { supabase } from "@/lib/supabase";
 
 type MachineryBookingFormProps = {
   machineryId: string;
@@ -18,12 +19,41 @@ export default function MachineryBookingForm({
   const [bookingDate, setBookingDate] = useState("");
   const [startTime, setStartTime] = useState("");
   const [endTime, setEndTime] = useState("");
+
+  const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [success, setSuccess] = useState(false);
+
+  const calculateHours = () => {
+    if (!startTime || !endTime) {
+      return 0;
+    }
+
+    const [startHour, startMinute] = startTime
+      .split(":")
+      .map(Number);
+
+    const [endHour, endMinute] = endTime
+      .split(":")
+      .map(Number);
+
+    const start = startHour * 60 + startMinute;
+    const end = endHour * 60 + endMinute;
+
+    return (end - start) / 60;
+  };
+
+  const hours = calculateHours();
+  const totalAmount =
+    hours > 0 ? hours * Number(pricePerHour) : 0;
 
   const handleSubmit = async (
     event: React.FormEvent<HTMLFormElement>
   ) => {
     event.preventDefault();
+
+    setMessage("");
+    setSuccess(false);
 
     if (!bookingDate || !startTime || !endTime) {
       setMessage("Please fill in all booking details.");
@@ -35,14 +65,58 @@ export default function MachineryBookingForm({
       return;
     }
 
+    setLoading(true);
+
+    const {
+      data: { user },
+      error: userError,
+    } = await supabase.auth.getUser();
+
+    if (userError || !user) {
+      setMessage("Please sign in before booking machinery.");
+      setLoading(false);
+      return;
+    }
+
+    const { data: profile, error: profileError } =
+      await supabase
+        .from("profiles")
+        .select("id")
+        .eq("id", user.id)
+        .single();
+
+    if (profileError || !profile) {
+      setMessage(
+        "Your farmer profile could not be found."
+      );
+      setLoading(false);
+      return;
+    }
+
+    const { error: bookingError } = await supabase
+      .from("machinery_bookings")
+      .insert({
+        farmer_id: profile.id,
+        machinery_id: machineryId,
+        booking_date: bookingDate,
+        start_time: startTime,
+        end_time: endTime,
+        status: "pending",
+        total_amount: totalAmount,
+      });
+
+    if (bookingError) {
+      setMessage(bookingError.message);
+      setLoading(false);
+      return;
+    }
+
+    setSuccess(true);
     setMessage(
-      `Booking request prepared for ${machineryName}.`
+      "Booking request submitted successfully!"
     );
 
-    /*
-      Actual Supabase booking insertion will be connected
-      after authentication is implemented.
-    */
+    setLoading(false);
   };
 
   return (
@@ -73,6 +147,7 @@ export default function MachineryBookingForm({
         </div>
 
         <div className="mt-5 rounded-xl bg-green-50 p-4">
+
           <p className="text-sm text-gray-600">
             Rental price
           </p>
@@ -80,6 +155,7 @@ export default function MachineryBookingForm({
           <p className="mt-1 text-xl font-bold text-green-700">
             ₹{Number(pricePerHour).toLocaleString("en-IN")} / hour
           </p>
+
         </div>
 
         <form
@@ -94,6 +170,7 @@ export default function MachineryBookingForm({
 
             <input
               type="date"
+              required
               value={bookingDate}
               onChange={(event) =>
                 setBookingDate(event.target.value)
@@ -112,6 +189,7 @@ export default function MachineryBookingForm({
 
               <input
                 type="time"
+                required
                 value={startTime}
                 onChange={(event) =>
                   setStartTime(event.target.value)
@@ -127,6 +205,7 @@ export default function MachineryBookingForm({
 
               <input
                 type="time"
+                required
                 value={endTime}
                 onChange={(event) =>
                   setEndTime(event.target.value)
@@ -137,27 +216,60 @@ export default function MachineryBookingForm({
 
           </div>
 
+          {hours > 0 && (
+            <div className="rounded-xl bg-gray-50 p-4">
+
+              <div className="flex justify-between text-sm">
+                <span className="text-gray-500">
+                  Duration
+                </span>
+
+                <span className="font-medium text-gray-800">
+                  {hours} hour{hours !== 1 ? "s" : ""}
+                </span>
+              </div>
+
+              <div className="mt-2 flex justify-between">
+                <span className="text-gray-500">
+                  Total Amount
+                </span>
+
+                <span className="font-bold text-green-700">
+                  ₹{totalAmount.toLocaleString("en-IN")}
+                </span>
+              </div>
+
+            </div>
+          )}
+
           {message && (
-            <div className="rounded-xl bg-gray-50 p-3 text-sm text-gray-600">
+            <div
+              className={`rounded-xl p-4 text-sm ${
+                success
+                  ? "bg-green-50 text-green-700"
+                  : "bg-red-50 text-red-600"
+              }`}
+            >
               {message}
             </div>
           )}
 
           <button
             type="submit"
-            className="w-full rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800"
+            disabled={loading || success}
+            className="w-full rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800 disabled:cursor-not-allowed disabled:bg-gray-300"
           >
-            Request Booking
+            {loading
+              ? "Submitting..."
+              : success
+                ? "Booking Submitted"
+                : "Request Booking"}
           </button>
 
         </form>
 
-        <p className="mt-4 text-xs leading-5 text-gray-400">
-          You will need to sign in before the booking can be
-          saved to your account.
-        </p>
-
       </div>
+
     </div>
   );
 }
