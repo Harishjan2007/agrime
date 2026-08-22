@@ -40,21 +40,21 @@ export default function Header() {
           </Link>
 
           <a
-            href="#"
+            href="/ecommerce"
             className="text-gray-700 hover:text-green-700"
           >
             E-Commerce
           </a>
 
           <a
-            href="#"
+            href="/dealers"
             className="text-gray-700 hover:text-green-700"
           >
             Dealers
           </a>
 
           <a
-            href="#"
+            href="/machinery"
             className="text-gray-700 hover:text-green-700"
           >
             Machinery
