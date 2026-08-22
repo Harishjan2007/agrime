@@ -79,10 +79,12 @@ export default function Header() {
             🔔
           </button>
 
-          <button className="text-sm font-medium text-gray-700">
-            👤 Farmer ▾
-          </button>
-
+         <Link
+             href="/profile"
+              className="text-sm font-medium text-gray-700 hover:text-green-700"
+          >
+          👤 Farmer
+        </Link>
         </div>
 
       </div>
