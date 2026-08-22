@@ -61,7 +61,7 @@ export default function Header() {
           </a>
 
           <a
-            href="#"
+            href="/schemes"
             className="text-gray-700 hover:text-green-700"
           >
             Schemes
