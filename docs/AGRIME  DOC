@@ -1,0 +1,192 @@
+AgriME – Agri Made Easy
+Project Overview, Requirements and User Roles
+
+1. Project Overview
+Project Title: AgriME – Agri Made Easy
+Project Type: AI-Powered Smart Agriculture Platform
+1.1 Introduction
+AgriME is an intelligent agricultural platform designed to help farmers make better decisions related to crop selling, agricultural product purchasing, farm machinery, and government schemes.
+The platform brings important agricultural services together in a single system. Farmers can view current crop prices, compare prices across different markets, get AI-based crop price predictions, purchase agricultural products, find nearby dealers, book farm machinery, and discover government schemes relevant to their farming activities.
+1.2 Problem
+Farmers often have to depend on different sources to obtain agricultural information and services. They may not easily know:
+    • The current price of their crop in different markets.
+    • Which nearby market offers a better price.
+    • Whether the crop price may increase or decrease in the near future.
+    • Where to purchase fertilizers, pesticides, seeds, and other agricultural products.
+    • Where nearby agricultural dealers are located and how to contact them.
+    • Where to find and book tractors, paddy harvesters, and other farm machinery.
+    • Which government agricultural schemes they may be eligible for.
+AgriME aims to bring these requirements together into one farmer-friendly platform.
+1.3 Proposed Solution
+AgriME provides a centralized platform where farmers can access agricultural market information and services based on their location and farming requirements.
+The platform will initially focus on five major areas:
+    1. Real-Time Crop Price Comparison
+    2. AI-Based Crop Price Prediction
+    3. Agricultural E-Commerce
+    4. Agricultural Government Scheme Recommendation
+    5. Farm Machinery Booking
+Additional supporting features include farmer profiles, dealer information, location-based services, and market comparison.
+1.4 Target Users
+The primary target users are farmers, particularly small and medium-scale farmers who need easy access to agricultural market information and services.
+Other users include:
+    • Agricultural product dealers and sellers
+    • Farm machinery owners/service providers
+    • Platform administrators
+
+2. System Requirements
+2.1 Functional Requirements
+FR-01 – Farmer Registration and Profile
+The system shall allow farmers to create an account and provide basic information such as:
+    • Name
+    • Contact information
+    • Location
+    • Crops cultivated
+    • Farm-related information
+The farmer profile will be used to provide personalized services.
+FR-02 – Seasonal Crop Price Display
+The system shall display current prices of important seasonal crops on the Home page.
+For example, depending on season and location, crops such as:
+    • Paddy
+    • Groundnut
+may be highlighted on the dashboard.
+FR-03 – Crop Price Comparison
+The system shall allow farmers to view and compare crop prices from different agricultural markets.
+The farmer shall be able to filter markets based on distance, such as:
+    • Within 25 km
+    • Within 50 km
+    • Within 100 km
+    • More than 100 km
+    • All locations
+The system shall also provide sorting options such as highest price, nearest market, and recently updated price.
+FR-04 – Crop Price Prediction
+The system shall provide AI/ML-based predictions of future crop prices.
+The prediction module shall provide information such as:
+    • Current price
+    • Predicted price range
+    • Price trend
+    • Historical price information
+    • Prediction period
+The prediction shall be presented as an estimate and not as a guaranteed future price.
+FR-05 – Agricultural E-Commerce
+The system shall allow farmers to browse and purchase agricultural products such as:
+    • Seeds
+    • Fertilizers
+    • Pesticides
+    • Agricultural equipment
+Products shall contain relevant information such as price, seller/dealer, availability, and product details.
+FR-06 – Dealer Information
+The system shall provide information about nearby agricultural dealers.
+Dealer information may include:
+    • Dealer name
+    • Location
+    • Distance
+    • Contact details
+    • Products/services available
+    • Operating information
+Farmers shall be able to locate and contact dealers.
+FR-07 – Farm Machinery Booking
+The system shall allow farmers to search and book agricultural machinery such as:
+    • Tractors
+    • Paddy harvesters
+    • Rotavators
+    • Other farm equipment
+The system shall display:
+    • Machinery details
+    • Owner/service provider
+    • Location
+    • Rental price
+    • Availability
+    • Booking date and time
+The system shall prevent conflicting bookings for the same machinery.
+FR-08 – Government Scheme Recommendation
+The system shall recommend relevant agricultural government schemes based on farmer information such as:
+    • Location
+    • Crop
+    • Land-related information
+    • Farming requirements
+    • Other eligibility information
+The system shall provide scheme details such as benefits, eligibility requirements, required documents, and official application information where available.
+FR-09 – Location-Based Services
+The system shall use the farmer's selected location to provide relevant:
+    • Market information
+    • Crop prices
+    • Dealers
+    • Machinery
+    • Agricultural services
+FR-10 – Administrator Management
+The administrator shall be able to manage and monitor:
+    • Farmers
+    • Dealers
+    • Products
+    • Machinery listings
+    • Bookings
+    • Government scheme information
+    • Market-related data
+
+2.2 Non-Functional Requirements
+NFR-01 – Usability
+The system should provide a simple and easy-to-understand interface suitable for farmers with different levels of technical knowledge.
+NFR-02 – Performance
+The system should load important information such as crop prices and dashboard content quickly.
+NFR-03 – Responsiveness
+The website should work properly on:
+    • Desktop computers
+    • Tablets
+    • Mobile devices
+NFR-04 – Security
+User accounts and personal information should be protected using appropriate authentication and authorization mechanisms.
+NFR-05 – Reliability
+The system should provide accurate and appropriately updated information wherever reliable data sources are available.
+NFR-06 – Scalability
+The system should be designed so that additional crops, markets, dealers, products, machinery, and users can be added as the platform grows.
+
+3. User Roles
+3.1 Farmer
+The farmer is the primary user of AgriME.
+The farmer can:
+    • Create and manage a profile.
+    • View seasonal crop prices.
+    • Compare prices across markets.
+    • Check crop price predictions.
+    • Browse and purchase agricultural products.
+    • Find nearby dealers.
+    • Contact dealers.
+    • Search for farm machinery.
+    • Check machinery availability.
+    • Book tractors, harvesters, and other machinery.
+    • View recommended government schemes.
+
+3.2 Agricultural Dealer / Seller
+Dealers and agricultural sellers provide products and services through the platform.
+They can:
+    • Create and manage a dealer profile.
+    • Add agricultural products.
+    • Update product prices and availability.
+    • Provide contact and location information.
+    • Receive and manage customer orders.
+    • Manage their listed services/products.
+
+3.3 Machinery Owner / Service Provider
+Machinery owners or agricultural service providers can:
+    • Register their machinery.
+    • Add machinery details.
+    • Set rental prices.
+    • Specify location.
+    • Set availability.
+    • View booking requests.
+    • Accept or reject bookings.
+    • Manage their booking schedule.
+
+3.4 Administrator
+The administrator manages the overall platform.
+The administrator can:
+    • Manage users.
+    • Verify and manage dealers.
+    • Manage product information.
+    • Manage machinery listings.
+    • Monitor bookings.
+    • Manage government scheme information.
+    • Manage agricultural market information.
+    • Monitor the overall system.
+
+				
