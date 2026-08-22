@@ -1,18 +1,7 @@
 import { supabase } from "@/lib/supabase";
-import CropPriceFilter from "@/app/components/CropPriceFilter";
+import CropPricePageClient from "@/app/components/CropPricePageClient";
 
-type CropPricePageProps = {
-  searchParams: Promise<{
-    crop?: string;
-  }>;
-};
-
-export default async function CropPricePage({
-  searchParams,
-}: CropPricePageProps) {
-  const params = await searchParams;
-  const selectedCrop = params.crop || "all";
-
+export default async function CropPricePage() {
   const { data: cropPrices, error } = await supabase
     .from("crop_prices")
     .select(`
@@ -26,17 +15,12 @@ export default async function CropPricePage({
       ),
       markets (
         name,
-        location
+        location,
+        latitude,
+        longitude
       )
     `)
     .order("price", { ascending: false });
-
-  const filteredPrices =
-    selectedCrop === "all"
-      ? cropPrices || []
-      : (cropPrices || []).filter(
-          (item: any) => item.crops?.name === selectedCrop
-        );
 
   if (error) {
     return (
@@ -45,6 +29,10 @@ export default async function CropPricePage({
           <h1 className="text-2xl font-bold text-red-600">
             Unable to load crop prices
           </h1>
+
+          <p className="mt-2 text-sm text-gray-500">
+            Please try again later.
+          </p>
         </div>
       </main>
     );
@@ -54,7 +42,7 @@ export default async function CropPricePage({
     <main className="min-h-screen bg-gray-50 px-6 py-10">
       <div className="mx-auto max-w-6xl">
 
-        {/* Page Header */}
+        {/* Header */}
         <div>
           <p className="text-sm font-semibold text-green-700">
             AGRIME MARKET
@@ -69,86 +57,9 @@ export default async function CropPricePage({
           </p>
         </div>
 
-        {/* Filter Area */}
-        <div className="mt-8 rounded-2xl bg-white p-5 shadow-sm">
-          <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-
-            <div>
-              <h2 className="font-semibold text-gray-900">
-                Market Prices
-              </h2>
-
-              <p className="text-sm text-gray-500">
-                Current development data from AgriME markets
-              </p>
-            </div>
-
-           <CropPriceFilter />
-
-          </div>
-        </div>
-
-        {/* Price Cards */}
-        <div className="mt-6 grid gap-5 md:grid-cols-2">
-
-          {filteredPrices.map((item: any) => (
-            <div
-              key={item.id}
-              className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:shadow-md"
-            >
-              <div className="flex items-start justify-between">
-
-                <div>
-                  <p className="text-sm text-gray-500">
-                    Crop
-                  </p>
-
-                  <h2 className="mt-1 text-xl font-bold text-gray-900">
-                    {item.crops?.name}
-                  </h2>
-                </div>
-
-                <div className="text-right">
-                  <p className="text-sm text-gray-500">
-                    Current Price
-                  </p>
-
-                  <p className="mt-1 text-2xl font-bold text-green-700">
-                    ₹{item.price}
-                  </p>
-
-                  <p className="text-xs text-gray-500">
-                    / {item.unit}
-                  </p>
-                </div>
-
-              </div>
-
-              <div className="mt-6 border-t border-gray-100 pt-4">
-
-                <p className="text-sm font-medium text-gray-800">
-                  {item.markets?.name}
-                </p>
-
-                <p className="mt-1 text-sm text-gray-500">
-                  📍 {item.markets?.location}
-                </p>
-
-                <p className="mt-3 text-xs text-gray-400">
-                  Source: {item.source}
-                </p>
-
-              </div>
-            </div>
-          ))}
-
-        </div>
-
-        {filteredPrices.length === 0 && (
-          <div className="mt-6 rounded-2xl bg-white p-8 text-center text-gray-500">
-            No prices found for this crop.
-          </div>
-        )}
+        <CropPricePageClient
+          cropPrices={cropPrices || []}
+        />
 
       </div>
     </main>
