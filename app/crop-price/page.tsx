@@ -1,6 +1,18 @@
 import { supabase } from "@/lib/supabase";
+import CropPriceFilter from "@/app/components/CropPriceFilter";
 
-export default async function CropPricePage() {
+type CropPricePageProps = {
+  searchParams: Promise<{
+    crop?: string;
+  }>;
+};
+
+export default async function CropPricePage({
+  searchParams,
+}: CropPricePageProps) {
+  const params = await searchParams;
+  const selectedCrop = params.crop || "all";
+
   const { data: cropPrices, error } = await supabase
     .from("crop_prices")
     .select(`
@@ -18,6 +30,13 @@ export default async function CropPricePage() {
       )
     `)
     .order("price", { ascending: false });
+
+  const filteredPrices =
+    selectedCrop === "all"
+      ? cropPrices || []
+      : (cropPrices || []).filter(
+          (item: any) => item.crops?.name === selectedCrop
+        );
 
   if (error) {
     return (
@@ -64,14 +83,7 @@ export default async function CropPricePage() {
               </p>
             </div>
 
-            <select
-              className="rounded-xl border border-gray-200 bg-white px-4 py-3 text-sm outline-none"
-              defaultValue="all"
-            >
-              <option value="all">All Crops</option>
-              <option value="Paddy">Paddy</option>
-              <option value="Groundnut">Groundnut</option>
-            </select>
+           <CropPriceFilter />
 
           </div>
         </div>
@@ -79,12 +91,11 @@ export default async function CropPricePage() {
         {/* Price Cards */}
         <div className="mt-6 grid gap-5 md:grid-cols-2">
 
-          {cropPrices?.map((item: any) => (
+          {filteredPrices.map((item: any) => (
             <div
               key={item.id}
               className="rounded-2xl border border-gray-100 bg-white p-6 shadow-sm transition hover:shadow-md"
             >
-
               <div className="flex items-start justify-between">
 
                 <div>
@@ -128,11 +139,16 @@ export default async function CropPricePage() {
                 </p>
 
               </div>
-
             </div>
           ))}
 
         </div>
+
+        {filteredPrices.length === 0 && (
+          <div className="mt-6 rounded-2xl bg-white p-8 text-center text-gray-500">
+            No prices found for this crop.
+          </div>
+        )}
 
       </div>
     </main>
