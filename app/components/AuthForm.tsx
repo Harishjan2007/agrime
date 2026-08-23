@@ -16,6 +16,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
   const [phone, setPhone] = useState("");
   const [password, setPassword] = useState("");
   const [location, setLocation] = useState("");
+  const [role, setRole] = useState("farmer");
 
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -55,7 +56,7 @@ export default function AuthForm({ mode }: AuthFormProps) {
           name,
           email,
           phone: phone || null,
-          role: "farmer",
+          role,
           location: location || null,
         });
 
@@ -72,17 +73,25 @@ export default function AuthForm({ mode }: AuthFormProps) {
       setLoading(false);
 
       setTimeout(() => {
-        router.push("/profile");
+        if (role === "dealer") {
+          router.push("/dealer");
+        } else if (role === "machinery_provider") {
+          router.push("/machinery-provider");
+        } else {
+          router.push("/profile");
+        }
+
         router.refresh();
       }, 1000);
 
       return;
     }
 
-    const { error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    const { data, error } =
+      await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
 
     if (error) {
       setMessage(error.message);
@@ -90,9 +99,35 @@ export default function AuthForm({ mode }: AuthFormProps) {
       return;
     }
 
+    if (!data.user) {
+      setMessage("Unable to sign in.");
+      setLoading(false);
+      return;
+    }
+
+    const { data: profile, error: profileError } =
+      await supabase
+        .from("profiles")
+        .select("role")
+        .eq("id", data.user.id)
+        .single();
+
+    if (profileError) {
+      setMessage(profileError.message);
+      setLoading(false);
+      return;
+    }
+
     setLoading(false);
 
-    router.push("/");
+    if (profile.role === "dealer") {
+      router.push("/dealer");
+    } else if (profile.role === "machinery_provider") {
+      router.push("/machinery-provider");
+    } else {
+      router.push("/");
+    }
+
     router.refresh();
   };
 
@@ -150,6 +185,38 @@ export default function AuthForm({ mode }: AuthFormProps) {
               placeholder="Example: Vellore, Tamil Nadu"
               className="mt-1 w-full rounded-xl border border-gray-200 px-4 py-3 outline-none focus:border-green-600"
             />
+          </div>
+
+          {/* Account Type */}
+
+          <div>
+            <label className="text-sm font-medium text-gray-700">
+              Account Type
+            </label>
+
+            <select
+              value={role}
+              onChange={(event) =>
+                setRole(event.target.value)
+              }
+              className="mt-1 w-full rounded-xl border border-gray-200 bg-white px-4 py-3 outline-none focus:border-green-600"
+            >
+              <option value="farmer">
+                Farmer
+              </option>
+
+              <option value="dealer">
+                Crop Dealer
+              </option>
+
+              <option value="machinery_provider">
+                Machinery Provider
+              </option>
+            </select>
+
+            <p className="mt-1 text-xs text-gray-500">
+              Choose the type of account you want to create.
+            </p>
           </div>
         </>
       )}

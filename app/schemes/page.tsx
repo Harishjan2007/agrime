@@ -1,3 +1,4 @@
+import Header from "@/app/components/Header";
 import { supabase } from "@/lib/supabase";
 import SchemesPageClient from "@/app/components/SchemesPageClient";
 
@@ -9,43 +10,53 @@ export default async function SchemesPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-gray-50 px-6 py-10">
-        <div className="mx-auto max-w-6xl">
-          <h1 className="text-2xl font-bold text-red-600">
-            Unable to load schemes
-          </h1>
+      <>
+        <Header />
 
-          <p className="mt-2 text-sm text-gray-500">
-            Please try again later.
-          </p>
-        </div>
-      </main>
+        <main className="min-h-screen bg-gray-50 px-6 py-10">
+          <div className="mx-auto max-w-6xl">
+            <h1 className="text-2xl font-bold text-red-600">
+              Unable to load schemes
+            </h1>
+
+            <p className="mt-2 text-sm text-gray-500">
+              Please try again later.
+            </p>
+          </div>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 px-6 py-10">
-      <div className="mx-auto max-w-6xl">
+    <>
+      <Header />
 
-        {/* Header */}
-        <div>
-          <p className="text-sm font-semibold text-green-700">
-            AGRIME SUPPORT
-          </p>
+      <main className="min-h-screen bg-gray-50 px-6 py-10">
+        <div className="mx-auto max-w-6xl">
 
-          <h1 className="mt-2 text-3xl font-bold text-gray-900">
-            Government Schemes
-          </h1>
+          {/* Page Header */}
+          <div>
+            <p className="text-sm font-semibold text-green-700">
+              AGRIME SUPPORT
+            </p>
 
-          <p className="mt-2 max-w-2xl text-gray-500">
-            Discover government schemes and support programs available
-            for farmers.
-          </p>
+            <h1 className="mt-2 text-3xl font-bold text-gray-900">
+              Government Schemes
+            </h1>
+
+            <p className="mt-2 max-w-2xl text-gray-500">
+              Discover government schemes and support programs available
+              for farmers.
+            </p>
+          </div>
+
+          <SchemesPageClient
+            schemes={schemes || []}
+          />
+
         </div>
-
-        <SchemesPageClient schemes={schemes || []} />
-
-      </div>
-    </main>
+      </main>
+    </>
   );
 }

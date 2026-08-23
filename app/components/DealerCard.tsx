@@ -1,3 +1,5 @@
+import Link from "next/link";
+
 type DealerCropPrice = {
   id: string;
   crop_id: string;
@@ -10,6 +12,7 @@ type DealerCropPrice = {
 };
 
 type DealerCardProps = {
+  id: string;
   shopName: string;
   address: string | null;
   phone: string | null;
@@ -18,6 +21,7 @@ type DealerCardProps = {
 };
 
 export default function DealerCard({
+  id,
   shopName,
   address,
   phone,
@@ -149,14 +153,15 @@ export default function DealerCard({
 
       </div>
 
+      {/* View Dealer */}
       <div className="mt-5 border-t border-gray-100 pt-5">
 
-        <button
-          type="button"
-          className="w-full rounded-xl bg-green-700 px-5 py-3 text-sm font-semibold text-white hover:bg-green-800"
+        <Link
+          href={`/dealers/${id}`}
+          className="block w-full rounded-xl bg-green-700 px-5 py-3 text-center text-sm font-semibold text-white hover:bg-green-800"
         >
           View Dealer
-        </button>
+        </Link>
 
       </div>
 

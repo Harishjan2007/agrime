@@ -82,6 +82,7 @@ export default function DealersPageClient({
         {filteredDealers.map((dealer) => (
           <DealerCard
             key={dealer.id}
+            id={dealer.id}
             shopName={dealer.shop_name}
             address={dealer.address}
             phone={dealer.phone}

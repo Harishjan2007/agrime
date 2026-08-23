@@ -1,3 +1,4 @@
+import Header from "@/app/components/Header";
 import { supabase } from "@/lib/supabase";
 import DealersPageClient from "@/app/components/DealersPageClient";
 
@@ -25,48 +26,56 @@ export default async function DealersPage() {
 
   if (error) {
     return (
-      <main className="min-h-screen bg-gray-50 px-6 py-10">
-        <div className="mx-auto max-w-6xl">
+      <>
+        <Header />
 
-          <h1 className="text-2xl font-bold text-red-600">
-            Unable to load dealers
-          </h1>
+        <main className="min-h-screen bg-gray-50 px-6 py-10">
+          <div className="mx-auto max-w-6xl">
 
-          <p className="mt-2 text-sm text-gray-500">
-            {error.message}
-          </p>
+            <h1 className="text-2xl font-bold text-red-600">
+              Unable to load dealers
+            </h1>
 
-        </div>
-      </main>
+            <p className="mt-2 text-sm text-gray-500">
+              {error.message}
+            </p>
+
+          </div>
+        </main>
+      </>
     );
   }
 
   return (
-    <main className="min-h-screen bg-gray-50 px-6 py-10">
+    <>
+      <Header />
 
-      <div className="mx-auto max-w-6xl">
+      <main className="min-h-screen bg-gray-50 px-6 py-10">
 
-        <div>
-          <p className="text-sm font-semibold text-green-700">
-            AGRIME SERVICES
-          </p>
+        <div className="mx-auto max-w-6xl">
 
-          <h1 className="mt-2 text-3xl font-bold text-gray-900">
-            Agricultural Dealers
-          </h1>
+          <div>
+            <p className="text-sm font-semibold text-green-700">
+              AGRIME SERVICES
+            </p>
 
-          <p className="mt-2 max-w-2xl text-gray-500">
-            Find agricultural dealers and see the crops they
-            currently buy from farmers.
-          </p>
+            <h1 className="mt-2 text-3xl font-bold text-gray-900">
+              Agricultural Dealers
+            </h1>
+
+            <p className="mt-2 max-w-2xl text-gray-500">
+              Find agricultural dealers and see the crops they
+              currently buy from farmers.
+            </p>
+          </div>
+
+          <DealersPageClient
+            dealers={dealers || []}
+          />
+
         </div>
 
-        <DealersPageClient
-          dealers={dealers || []}
-        />
-
-      </div>
-
-    </main>
+      </main>
+    </>
   );
 }
