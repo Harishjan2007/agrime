@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import DealerProfileForm from "@/app/components/DealerProfileForm";
+import DealerCropPrices from "@/app/components/DealerCropPrices";
 
 type Dealer = {
+  id: string;
   shop_name: string;
   address: string | null;
   phone: string | null;
@@ -14,11 +16,29 @@ type Dealer = {
   opening_hours: string | null;
 };
 
+type Crop = {
+  id: string;
+  name: string;
+};
+
+type DealerCropPrice = {
+  id: string;
+  crop_id: string;
+  buying_price: number;
+  unit: string;
+  active: boolean;
+  crops: {
+    name: string;
+  } | null;
+};
+
 export default function DealerDashboard() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState<any>(null);
   const [profile, setProfile] = useState<any>(null);
   const [dealer, setDealer] = useState<Dealer | null>(null);
+  const [crops, setCrops] = useState<Crop[]>([]);
+  const [cropPrices, setCropPrices] = useState<DealerCropPrice[]>([]);
   const [error, setError] = useState("");
 
   useEffect(() => {
@@ -61,6 +81,7 @@ export default function DealerDashboard() {
         await supabase
           .from("dealers")
           .select(`
+            id,
             shop_name,
             address,
             phone,
@@ -77,7 +98,50 @@ export default function DealerDashboard() {
         return;
       }
 
+      if (!dealerData) {
+        setLoading(false);
+        return;
+      }
+
       setDealer(dealerData);
+
+      const { data: cropData, error: cropError } =
+        await supabase
+          .from("crops")
+          .select("id, name")
+          .order("name", { ascending: true });
+
+      if (cropError) {
+        setError(cropError.message);
+        setLoading(false);
+        return;
+      }
+
+      setCrops(cropData || []);
+
+      const { data: priceData, error: priceError } =
+        await supabase
+          .from("dealer_crop_prices")
+          .select(`
+            id,
+            crop_id,
+            buying_price,
+            unit,
+            active,
+            crops (
+              name
+            )
+          `)
+          .eq("dealer_id", dealerData.id)
+          .order("created_at", { ascending: false });
+
+      if (priceError) {
+        setError(priceError.message);
+        setLoading(false);
+        return;
+      }
+
+      setCropPrices(priceData || []);
       setLoading(false);
     }
 
@@ -156,12 +220,42 @@ export default function DealerDashboard() {
         <div className="mx-auto max-w-3xl">
 
           <h1 className="text-2xl font-bold text-red-600">
-            Unable to load dealer profile
+            Unable to load dealer dashboard
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">
             {error}
           </p>
+
+        </div>
+      </main>
+    );
+  }
+
+  if (!dealer) {
+    return (
+      <main className="min-h-screen bg-gray-50 px-6 py-10">
+        <div className="mx-auto max-w-3xl">
+
+          <div>
+            <p className="text-sm font-semibold text-green-700">
+              AGRIME BUSINESS
+            </p>
+
+            <h1 className="mt-2 text-3xl font-bold text-gray-900">
+              Dealer Dashboard
+            </h1>
+
+            <p className="mt-2 text-gray-500">
+              Create your dealer profile to start listing the crops you buy.
+            </p>
+          </div>
+
+          <div className="mt-8">
+            <DealerProfileForm
+              existingDealer={null}
+            />
+          </div>
 
         </div>
       </main>
@@ -183,7 +277,7 @@ export default function DealerDashboard() {
           </h1>
 
           <p className="mt-2 text-gray-500">
-            Manage your agricultural dealer profile.
+            Manage your dealer profile and the crops you buy from farmers.
           </p>
         </div>
 
@@ -191,18 +285,22 @@ export default function DealerDashboard() {
           existingDealer={dealer}
         />
 
-        {dealer && (
-          <div className="mt-6 text-center">
+        <DealerCropPrices
+          dealerId={dealer.id}
+          crops={crops}
+          initialPrices={cropPrices}
+        />
 
-            <Link
-              href="/dealer/products"
-              className="inline-block rounded-xl bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800"
-            >
-              📦 Manage Products
-            </Link>
+        <div className="mt-6 text-center">
 
-          </div>
-        )}
+          <Link
+            href="/dealer/products"
+            className="inline-block rounded-xl bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800"
+          >
+            📦 Manage Products
+          </Link>
+
+        </div>
 
       </div>
 

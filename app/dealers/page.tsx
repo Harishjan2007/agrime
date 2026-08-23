@@ -9,7 +9,17 @@ export default async function DealersPage() {
       shop_name,
       address,
       phone,
-      opening_hours
+      opening_hours,
+      dealer_crop_prices (
+        id,
+        crop_id,
+        buying_price,
+        unit,
+        active,
+        crops (
+          name
+        )
+      )
     `)
     .order("shop_name", { ascending: true });
 
@@ -46,8 +56,8 @@ export default async function DealersPage() {
           </h1>
 
           <p className="mt-2 max-w-2xl text-gray-500">
-            Find agricultural dealers and suppliers for your
-            farming needs.
+            Find agricultural dealers and see the crops they
+            currently buy from farmers.
           </p>
         </div>
 
