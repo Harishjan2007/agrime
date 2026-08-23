@@ -1,11 +1,100 @@
+"use client";
+
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import DealerProfileForm from "@/app/components/DealerProfileForm";
 
-export default async function DealerDashboard() {
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+type Dealer = {
+  shop_name: string;
+  address: string | null;
+  phone: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  opening_hours: string | null;
+};
+
+export default function DealerDashboard() {
+  const [loading, setLoading] = useState(true);
+  const [user, setUser] = useState<any>(null);
+  const [profile, setProfile] = useState<any>(null);
+  const [dealer, setDealer] = useState<Dealer | null>(null);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    async function loadDealer() {
+      setLoading(true);
+      setError("");
+
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
+
+      if (!user) {
+        setLoading(false);
+        return;
+      }
+
+      setUser(user);
+
+      const { data: profileData, error: profileError } =
+        await supabase
+          .from("profiles")
+          .select("name, role")
+          .eq("id", user.id)
+          .single();
+
+      if (profileError) {
+        setError(profileError.message);
+        setLoading(false);
+        return;
+      }
+
+      setProfile(profileData);
+
+      if (profileData.role !== "dealer") {
+        setLoading(false);
+        return;
+      }
+
+      const { data: dealerData, error: dealerError } =
+        await supabase
+          .from("dealers")
+          .select(`
+            shop_name,
+            address,
+            phone,
+            latitude,
+            longitude,
+            opening_hours
+          `)
+          .eq("user_id", user.id)
+          .maybeSingle();
+
+      if (dealerError) {
+        setError(dealerError.message);
+        setLoading(false);
+        return;
+      }
+
+      setDealer(dealerData);
+      setLoading(false);
+    }
+
+    loadDealer();
+  }, []);
+
+  if (loading) {
+    return (
+      <main className="min-h-screen bg-gray-50 px-6 py-10">
+        <div className="mx-auto max-w-3xl text-center">
+          <p className="text-gray-500">
+            Loading dealer dashboard...
+          </p>
+        </div>
+      </main>
+    );
+  }
 
   if (!user) {
     return (
@@ -32,12 +121,6 @@ export default async function DealerDashboard() {
     );
   }
 
-  const { data: profile } = await supabase
-    .from("profiles")
-    .select("name, role")
-    .eq("id", user.id)
-    .single();
-
   if (profile?.role !== "dealer") {
     return (
       <main className="min-h-screen bg-gray-50 px-6 py-10">
@@ -52,8 +135,7 @@ export default async function DealerDashboard() {
           </h1>
 
           <p className="mt-2 text-gray-500">
-            This area is for registered dealers. Your current
-            account is a {profile?.role || "farmer"} account.
+            This area is for registered dealers.
           </p>
 
           <Link
@@ -68,30 +150,17 @@ export default async function DealerDashboard() {
     );
   }
 
-  const { data: dealer, error } = await supabase
-    .from("dealers")
-    .select(`
-      shop_name,
-      address,
-      phone,
-      latitude,
-      longitude,
-      opening_hours
-    `)
-    .eq("user_id", user.id)
-    .maybeSingle();
-
   if (error) {
     return (
       <main className="min-h-screen bg-gray-50 px-6 py-10">
-        <div className="mx-auto max-w-6xl">
+        <div className="mx-auto max-w-3xl">
 
           <h1 className="text-2xl font-bold text-red-600">
             Unable to load dealer profile
           </h1>
 
           <p className="mt-2 text-sm text-gray-500">
-            {error.message}
+            {error}
           </p>
 
         </div>
@@ -121,6 +190,19 @@ export default async function DealerDashboard() {
         <DealerProfileForm
           existingDealer={dealer}
         />
+
+        {dealer && (
+          <div className="mt-6 text-center">
+
+            <Link
+              href="/dealer/products"
+              className="inline-block rounded-xl bg-green-700 px-6 py-3 font-semibold text-white hover:bg-green-800"
+            >
+              📦 Manage Products
+            </Link>
+
+          </div>
+        )}
 
       </div>
 
